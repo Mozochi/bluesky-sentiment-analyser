@@ -17,6 +17,7 @@ class GUI:
         self.progressBar = ttk.Progressbar(self.window, orient="horizontal", length=300, mode="determinate")
         self.enterVar=StringVar()
         self.enter = Entry(self.window, textvariable = self.enterVar)
+        self.invalidInputLabel = Label(self.window, text='Sorry invalid input')
         self.display()
 
     def display(self):
@@ -27,6 +28,12 @@ class GUI:
         self.progressBar.grid(row=4, column=0)
         self.radioButton1.grid(row=1, column=0)
         self.radioButton2.grid(row=1, column=1)
+
+    def invalidInputLabelDisplay(self):
+        self.invalidInputLabel.grid(row=5, column=0)
+
+    def invalidInputLabelHide(self):
+        self.invalidInputLabel.grid_forget()
 
     def changeButtonText(self):
         if (self.radioVar.get() == 0):
@@ -58,15 +65,18 @@ class GUI:
 
     def submit(self):
         enter = self.enterVar.get().strip()
-
-        if (self.radioVar.get() == 0):
-            pass
+        if (enter == ""):
+            self.invalidInputLabelDisplay()
 
         else:
-            pass
+            if (self.radioVar.get() == 0):
+                pass
 
-        self.startProgress()
-        self.getData()
-        self.analyse()
+            else:
+                pass
+
+            self.startProgress()
+            self.getData()
+            self.analyse()
 
         self.enterVar.set("")
