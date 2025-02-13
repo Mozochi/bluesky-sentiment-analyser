@@ -1,15 +1,22 @@
 from nltk.corpus import twitter_samples
-from sentimentAnalyser import sentimentAnalyser
+from bin import sentimentAnalyser
+from bin import preprocessing
 import pandas as pd
 
-theSentimentAnalyser = sentimentAnalyser()
-tweets = twitter_samples.strings('positive_tweets.json') + twitter_samples.strings('negative_tweets.json')
+def main():
+    Analyse = sentimentAnalyser.sentimentAnalyser()
 
-df = pd.DataFrame(tweets, columns=['Text'])
-df['Sentiment'] = ''
+    tweets = twitter_samples.strings('positive_tweets.json') + twitter_samples.strings('negative_tweets.json')
 
-# Calling the Preprocessing function and the sentiment function to determine the sentiment of each review
-for row, text in enumerate(df['Text']):
-    df.at[row, 'Sentiment'] = theSentimentAnalyser.sentiment(theSentimentAnalyser.Process(text))
+    df = pd.DataFrame(tweets, columns=['Text'])
+    df['Sentiment'] = ''
 
-df.to_csv(r'tweets.csv', index=False)
+    # Calling the Preprocessing function and the sentiment function to determine the sentiment of each review
+    for row, text in enumerate(df['Text']):
+        df.at[row, 'Sentiment'] = Analyse.sentiment(preprocessing.Process(text))
+
+    df.to_csv(r'tweets.csv', index=False)
+
+
+if __name__ == '__main__':
+    main()
