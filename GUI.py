@@ -57,7 +57,16 @@ class GUI:
         return
 
     def submit(self):
-        enter = self.enterVar.get()
+        enter = self.enterVar.get().strip()
+
+        if (self.radioVar.get() == 0):
+            pass
+
+        else:
+            pass
+
         self.startProgress()
         self.getData()
         self.analyse()
+
+        self.enterVar.set("")
