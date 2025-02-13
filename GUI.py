@@ -38,6 +38,7 @@ class GUI:
         self.buttonLabel.config(text=self.buttonText)
 
     def startProgress(self):
+        # place holder from geeks for geeks
         self.progressBar.start()
 
         # Simulate a task that takes time to complete
