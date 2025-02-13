@@ -80,3 +80,6 @@ class GUI:
             self.analyse()
 
         self.enterVar.set("")
+
+    def mainLoop(self):
+        self.window.mainloop()
