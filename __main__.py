@@ -1,5 +1,5 @@
 from GUI import GUI
 
-GUI = GUI()
+theGUI = GUI()
 
-GUI.mainLoop()
+theGUI.main_loop()

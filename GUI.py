@@ -1,85 +1,95 @@
-from tkinter import *
+import tkinter as tk
 import time
 from tkinter import ttk
 
 class GUI:
-
-    def __init__ (self):
-        self.window = Tk()
+    def __init__(self):
+        self.window = tk.Tk()
         self.window.geometry("600x600")
-        self.topLabel = Label(self.window, text='Facebook sentiment analyser')
-        self.buttonText = 'Please enter a key word'
-        self.buttonLabel = Label(self.window, text=self.buttonText)
-        self.button = Button(self.window, text='submit', width=25, command=self.submit)
-        self.radioVar = IntVar()
-        self.radioButton1 = Radiobutton(self.window, text='keyword input', variable=self.radioVar, value=0, command=self.changeButtonText)
-        self.radioButton2 = Radiobutton(self.window, text='profile input', variable=self.radioVar, value=1, command=self.changeButtonText)
-        self.progressBar = ttk.Progressbar(self.window, orient="horizontal", length=300, mode="determinate")
-        self.enterVar=StringVar()
-        self.enter = Entry(self.window, textvariable = self.enterVar)
-        self.invalidInputLabel = Label(self.window, text='Sorry invalid input')
-        self.display()
 
-    def display(self):
-        self.topLabel.grid(row=0, column=0)
-        self.buttonLabel.grid(row=2, column=0)
-        self.enter.grid(row=2, column=1)
-        self.button.grid(row=3, column=0)
-        self.progressBar.grid(row=4, column=0)
-        self.radioButton1.grid(row=1, column=0)
-        self.radioButton2.grid(row=1, column=1)
+        self.top_label = tk.Label(self.window, text='Facebook Sentiment Analyzer')
+        self.button_text = 'Please enter a keyword'
+        self.button_label = tk.Label(self.window, text=self.button_text)
+        self.submit_button = tk.Button(
+            self.window, text='Submit', width=25, command=self.submit
+        )
 
-    def invalidInputLabelDisplay(self):
-        self.invalidInputLabel.grid(row=5, column=0)
+        self.radio_var = tk.IntVar()
+        self.radio_button1 = tk.Radiobutton(
+            self.window, text='Keyword Input', variable=self.radio_var, value=0,
+            command=self.change_button_text
+        )
+        self.radio_button2 = tk.Radiobutton(
+            self.window, text='Profile Input', variable=self.radio_var, value=1,
+            command=self.change_button_text
+        )
 
-    def invalidInputLabelHide(self):
-        self.invalidInputLabel.grid_forget()
+        self.progress_bar = ttk.Progressbar(
+            self.window, orient="horizontal", length=300, mode="determinate"
+        )
 
-    def changeButtonText(self):
-        if (self.radioVar.get() == 0):
-            self.buttonText = 'Please enter a key word'
+        self.enter_var = tk.StringVar()
+        self.entry_field = tk.Entry(self.window, textvariable=self.enter_var)
+
+        self.invalid_input_label = tk.Label(self.window, text='Sorry, invalid input')
+
+        self.display_widgets()
+    def display_widgets(self):
+        self.top_label.grid(row=0, column=0)
+        self.button_label.grid(row=2, column=0)
+        self.entry_field.grid(row=2, column=1)
+        self.submit_button.grid(row=3, column=0)
+        self.progress_bar.grid(row=4, column=0)
+        self.radio_button1.grid(row=1, column=0)
+        self.radio_button2.grid(row=1, column=1)
+
+    def show_invalid_input_label(self):
+        self.invalid_input_label.grid(row=5, column=0)
+
+    def hide_invalid_input_label(self):
+        self.invalid_input_label.grid_forget()
+
+    def change_button_text(self):
+        if self.radio_var.get() == 0:
+            self.button_text = 'Please enter a keyword'
 
         else:
-            self.buttonText = 'Please enter a profile name'
+            self.button_text = 'Please enter a profile name'
 
-        self.buttonLabel.config(text=self.buttonText)
+        self.button_label.config(text=self.button_text)
 
-    def startProgress(self):
+    def start_progress(self):
         # place holder from geeks for geeks
-        self.progressBar.start()
+        self.progress_bar.start()
 
-        # Simulate a task that takes time to complete
         for i in range(101):
-          # Simulate some work
             time.sleep(0.05)
-            self.progressBar['value'] = i
-            # Update the GUI
+            self.progress_bar['value'] = i
             self.window.update_idletasks()
-        self.progressBar.stop()
 
-    def getData(self):
-        return
+        self.progress_bar.stop()
 
-    def analyse(self):
+    def get_data(self):
+        # call controller
         return
 
     def submit(self):
-        enter = self.enterVar.get().strip()
-        if (enter == ""):
-            self.invalidInputLabelDisplay()
+        user_input = self.enter_var.get().strip()
+
+        if not user_input:
+            self.show_invalid_input_label()
 
         else:
-            if (self.radioVar.get() == 0):
+            if (self.radio_var.get() == 0):
                 pass
 
             else:
                 pass
 
-            self.startProgress()
-            self.getData()
-            self.analyse()
+            self.start_progress()
+            self.get_data()
 
-        self.enterVar.set("")
+        self.enter_var.set("")
 
-    def mainLoop(self):
+    def main_loop(self):
         self.window.mainloop()
