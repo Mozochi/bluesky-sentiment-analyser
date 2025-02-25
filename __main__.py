@@ -1,4 +1,3 @@
-from nltk.corpus import twitter_samples
 from bin import naive_bayes
 from bin import sentiment_analyser
 
@@ -20,7 +19,7 @@ def main():
     
     model, vocab = sentiment_analyser.train(nb, train_texts, y_train) # Training the model
 
-    test_data =  ["I love coding", "I hate pizza",] # Testing data
+    test_data =  ["I love coding", "I hate pizza", "I love driving"] # Testing data
     predictions = sentiment_analyser.predict(model, test_data, vocab) # Making predictions
 
     for i, prediction in enumerate(predictions): # Printing the predictions
