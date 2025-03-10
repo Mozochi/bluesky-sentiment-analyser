@@ -18,5 +18,5 @@ filtered_posts = [
     for post in postData["posts"]
 ]
 
-# Print result
+
 print(json.dumps(filtered_posts, indent=1))
