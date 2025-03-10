@@ -1,5 +1,22 @@
 import requests
+import json
 
-blueskyURL = "https://public.api.bsky.app/xrpc/app.bsky.feed.searchPosts?q=tesla?&sort=latest"
+
+searchterm = "United Kingdom"
+sortSetting = "latest"
+language = "en"
+blueskyURL = ("https://public.api.bsky.app/xrpc/app.bsky.feed.searchPosts?q="
+              + searchterm + "?&sort=" + sortSetting + "?&language=" + language)
 postData = requests.get(blueskyURL).json()
-print(postData)
+
+filtered_posts = [
+    {
+        "displayName": post["author"]["displayName"],
+        "createdAt": post["record"]["createdAt"],
+        "text": post["record"]["text"]
+    }
+    for post in postData["posts"]
+]
+
+# Print result
+print(json.dumps(filtered_posts, indent=1))
