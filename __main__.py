@@ -1,5 +1,5 @@
 from GUI import GUI
+from GUI import GUI2
 
-theGUI = GUI()
-
-theGUI.main_loop()
+app = GUI()
+app.launch()

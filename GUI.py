@@ -1,8 +1,59 @@
 import tkinter as tk
 import time
 from tkinter import ttk
+import gradio as gr
 
 class GUI:
+    def __init__(self):
+        with gr.Blocks(css=".center {text-align: center; margin-left: auto; margin-right: auto;}") as self.interface:
+            gr.Markdown("# Facebook sentiment tantaliser", elem_classes="center")
+
+            self.choice = gr.Radio(
+                ["Profile", "Key word"],
+                label="Choose one:",
+                value="Profile"
+            )
+
+            self.input_label = gr.Textbox(
+                value=self.get_input_text(),
+                interactive=False,
+                label="",
+                elem_classes="invisible-box"
+            )
+
+            self.text_input = gr.Textbox(label="Input")
+            self.submit = gr.Button("Submit")
+            self.output = gr.Textbox(label="Result:")
+
+            self.choice.change(
+                fn=self.update_input_text_label,
+                inputs=self.choice,
+                outputs=self.input_label
+            )
+
+            self.submit.click(
+                fn=self.predict,
+                inputs=[self.choice, self.text_input],
+                outputs=self.output
+            )
+
+    def get_input_text(self):
+        if self.choice.value == "Profile":
+            return "Please enter the Facebook profile."
+        else:
+            return "Please enter a keyword."
+
+    def update_input_text_label(self, choice):
+        self.choice.value = choice
+        return self.get_input_text()
+
+    def predict(self, choice, text_input):
+        return f"You selected '{choice}' and typed '{text_input}'."
+
+    def launch(self):
+        self.interface.launch()
+
+class GUI2:
     def __init__(self):
         self.window = tk.Tk()
         self.window.geometry("600x600")
