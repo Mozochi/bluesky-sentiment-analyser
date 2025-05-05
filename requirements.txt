@@ -4,7 +4,6 @@ nltk
 
 # Data Handling
 pandas
-pickle
 
 # Web Interface
 gradio
