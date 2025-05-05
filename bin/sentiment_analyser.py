@@ -4,13 +4,13 @@ from .naive_bayes import NaiveBayes # Import NaiveBayes for type hinting if desi
 
 def train(model: NaiveBayes, data, labels):
     # Builds vocabulary, vectorizes data, trains the Naive Bayes model, and returns the trained model and the vocabulary used.
-    print("Building vocabulary...")
+    # Building vocabulary
     vocab = build_vocab(data)
 
-    print("Vectorizing training data...")
+    # Vectorizing training data
     X_train = text_to_binary_vectors(data, vocab)
 
-    print("Fitting model...")
+    # Fitting model
     # Pass the vocabulary to the fit method 
     model.fit(X_train, labels, vocab)
     print("Model fitting complete.")
@@ -25,10 +25,10 @@ def predict(model: NaiveBayes, data, vocab):
     if vocab != model.vocabulary:
         raise ValueError("Vocabulary mismatch between provided vocab and model's internal vocab.")
 
-    print("Vectorizing test data...")
+    # Vectorizing test data
     X_test = text_to_binary_vectors(data, vocab)
 
-    print("Making predictions...")
+    # Making predictions
     predictions = model.predict(X_test)
     print("Prediction complete.")
     return predictions
