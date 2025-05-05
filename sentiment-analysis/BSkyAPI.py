@@ -4,6 +4,7 @@ import csv
 from datetime import datetime
 from dotenv import load_dotenv
 import os
+import pandas as pd
 
 def GetPostsFromSearch(searchterm, sortSetting, language):
     # Fix the URL construction - using proper query parameter format
@@ -33,7 +34,10 @@ def GetPostsFromSearch(searchterm, sortSetting, language):
     else:
         print(f"Error: {response.status_code}")
 
+    createCSV(filtered_posts)
 
+
+def createCSV(filtered_posts):
     for post in filtered_posts:
         # Parse the ISO format date
         dt = datetime.fromisoformat(post["createdAt"].replace("Z", "+00:00"))
@@ -49,8 +53,14 @@ def GetPostsFromSearch(searchterm, sortSetting, language):
             writer.writerow(post)
     print("CSV file 'postData.csv' has been created successfully.")
 
+    df = pd.read_csv('postData.csv')
+    df_filtered = df[df['text'].notna() & (df['text'].str.strip() != '')]
+    print(f"Removed {df.shape[0] - df_filtered.shape[0]} rows with blank text fields")
+    df_filtered.to_csv('postData-filtered.csv', index=False)
+    os.remove('postData.csv')
 
-def GetPostsFromHandle():
+
+def GetPostsFromHandle(actor):
     load_dotenv()
     identifier = os.getenv("IDENTIFIER")
     password = os.getenv("PASSWORD")
@@ -77,7 +87,7 @@ def GetPostsFromHandle():
 
     blueskyURL = "https://api.bsky.social/xrpc/app.bsky.feed.getAuthorFeed"
     params = {
-        "actor": "linusmediagroup.com",
+        "actor": actor,
         "limit": "100"
     }
     response = requests.get(blueskyURL, params=params, headers={'authorization': f'Bearer {token}'})
@@ -93,21 +103,7 @@ def GetPostsFromHandle():
                     'text': item['post']['record']['text']
                 })
 
-        for post in filtered_posts:
-            # Parse the ISO format date
-            dt = datetime.fromisoformat(post["createdAt"].replace("Z", "+00:00"))
-            # Format as YYYY-MM-DD HH:MM:SS
-            post["createdAt"] = dt.strftime("%d-%m-%Y %H:%M:%S")
-        with open('postData.csv', 'w', newline='', encoding='utf-8') as csvfile:
-            fieldnames = ['displayName', 'createdAt', 'text']
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-
-            writer.writeheader()
-
-            for post in filtered_posts:
-                writer.writerow(post)
-        print("CSV file 'postData.csv' has been created successfully.")
-
+        createCSV(filtered_posts)
 
     else:
         print(f"Error: {response.status_code}")
@@ -115,7 +111,7 @@ def GetPostsFromHandle():
 
 def main():
     #GetPostsFromSearch("Cambridge", "top", "en")
-    GetPostsFromHandle()
+    GetPostsFromHandle("linusmediagroup.com")
 
 if __name__ == '__main__':
     main()
