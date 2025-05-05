@@ -1,6 +1,7 @@
 import math
 import pickle
 import os 
+from tqdm import tqdm
 
 from bin.config import smoothingFactor
 
@@ -19,11 +20,11 @@ class NaiveBayes:
 
         # Counting how many times class c appears in y
         for classLabel in self.classes:
-            documentsInClass = y.count(classLabel)
+            documentsInClass = (y == classLabel).sum()
             self.priors[classLabel] = documentsInClass / totalDocuments
 
         numFeatures = len(self.vocabulary) # Use stored vocabulary length
-        for classLabel in self.classes:
+        for classLabel in tqdm(self.classes, desc="Calculating Likelihoods..."):
             # Initialize likelihoods for this class using feature indices (0 to numFeatures-1)
             self.likelihoods[classLabel] = {} # Dictionary mapping feature index : likelihood
 
@@ -32,7 +33,7 @@ class NaiveBayes:
             numDocumentsInClass = len(classDocuments)
 
             # For each feature position (index corresponding to a word in vocabulary)
-            for featurePosition in range(numFeatures):
+            for featurePosition in tqdm(range(numFeatures), desc=f"Likelihoods class {classLabel}...", leave=False):
                 # Counting how many times this feature is 1 for this class
                 featurePositiveCount = sum(1 for document in classDocuments if document[featurePosition] == 1)
 
@@ -45,7 +46,7 @@ class NaiveBayes:
             raise ValueError("Model must be trained with fit() or loaded before calling predict()")
 
         predictions = []
-        for document in X: # Classify each document
+        for document in tqdm(X, desc="Predicting...    "): # Classify each document
             scores= {}
 
             # For each possible class identified during training
