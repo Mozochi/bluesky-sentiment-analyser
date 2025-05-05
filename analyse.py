@@ -1,6 +1,9 @@
 from bin import naive_bayes
 from bin import sentiment_analyser
 import os
+import pandas as pd
+from tqdm import tqdm
+import time
 
 
 MODEL_FILEPATH = "sentiment_analyser_model.pkl"
@@ -24,16 +27,32 @@ def main():
         print(f"Model file not found at {MODEL_FILEPATH}. Training a new model...")
 
         # Training Data
-        train_texts = [
-            "I love pizza",                 # Class 1 (Positive)
-            "I enjoy coding",               # Class 1 (Positive)
-            "I hate spam notifications",    # Class 0 (Negative)
-            "I dislike noisy alerts",       # Class 0 (Negative)
-            "I hate rainy days",            # Class 0 (Negative)
-            "I love machine learning",      # Class 1 (Positive)
-            "I hate sitting in traffic"     # Class 0 (Negative)
-            ]
-        y_train = [1, 1, 0, 0, 0, 1, 0] # Labels for the training data
+        df = pd.read_csv('training.csv')
+        
+        try:
+            sentiment_col_idx = df.columns.get_loc('sentiment')
+        except KeyError:
+            print("Error: 'sentiment' column not found in DataFrame.")
+            exit()
+
+
+        train_texts = df['text']
+        y_train = df['sentiment']
+
+        for idx, sentiment in enumerate(tqdm(y_train, desc="Updating sentiment column...")):
+
+            if isinstance(sentiment, str):
+                sentiment_lower = sentiment.lower()
+
+                if sentiment_lower == "positive":
+                    df.iat[idx, sentiment_col_idx] = 2
+                elif sentiment_lower == "neutral":
+                    df.iat[idx, sentiment_col_idx] = 1
+                elif sentiment_lower == "negative":
+                    df.iat[idx, sentiment_col_idx] = 0
+
+
+                
 
         # Create a new Naive Bayes instance
         nb_instance = naive_bayes.NaiveBayes()
@@ -51,16 +70,16 @@ def main():
          raise RuntimeError("Model or vocabulary is not available. Cannot proceed with testing.")
 
     print("\n--- Testing ---")
-    test_data = ["I love coding", "I hate pizza", "I love driving"]
+    test_data = ["Gaming is good", "i hate the internet"]
 
     
     predictions = sentiment_analyser.predict(model, test_data, vocab)
 
     print("\n--- Predictions ---")
     for i, prediction in enumerate(predictions):
-        # Determine sentiment text based on the prediction label (0 or 1)
-        sentiment = 'Positive' if prediction == 1 else 'Negative'
-        print(f"'{test_data[i]}' --> {sentiment} (Class {prediction})")
+        # Determine sentiment text based on the prediction label (0 (Negative) or 1 (1 Positive))
+        sentiment = 'Positive' if prediction == 2 else 'Negative'
+        print(f"'{test_data[i]}' --> {prediction} ({sentiment})")
 
 if __name__ == '__main__':
     main()
