@@ -6,7 +6,7 @@ from tqdm import tqdm
 import time
 
 
-MODEL_FILEPATH = "sentiment_analyser_model.pkl"
+MODEL_FILEPATH = "sentiment_analyser_model.json"
 
 def main():
     ### Try to Load Pre-trained Model
