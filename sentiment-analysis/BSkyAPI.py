@@ -2,6 +2,8 @@ import requests
 import json
 import csv
 from datetime import datetime
+from dotenv import load_dotenv
+import os
 
 def GetPostsFromSearch(searchterm, sortSetting, language):
     # Fix the URL construction - using proper query parameter format
@@ -30,7 +32,6 @@ def GetPostsFromSearch(searchterm, sortSetting, language):
         print(json.dumps(filtered_posts, indent=1))
     else:
         print(f"Error: {response.status_code}")
-        print(response.text)
 
 
     for post in filtered_posts:
@@ -38,7 +39,7 @@ def GetPostsFromSearch(searchterm, sortSetting, language):
         dt = datetime.fromisoformat(post["createdAt"].replace("Z", "+00:00"))
         # Format as YYYY-MM-DD HH:MM:SS
         post["createdAt"] = dt.strftime("%d-%m-%Y %H:%M:%S")
-    with open('data/postData.csv', 'w', newline='', encoding='utf-8') as csvfile:
+    with open('postData.csv', 'w', newline='', encoding='utf-8') as csvfile:
         fieldnames = ['displayName', 'createdAt', 'text']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
@@ -50,23 +51,71 @@ def GetPostsFromSearch(searchterm, sortSetting, language):
 
 
 def GetPostsFromHandle():
+    load_dotenv()
+    identifier = os.getenv("IDENTIFIER")
+    password = os.getenv("PASSWORD")
+
+    print("Identifier:", identifier)
+    print("Password:", password)
+
+    AtProtoAuthURL = "https://bsky.social/xrpc/com.atproto.server.createSession"
+
+    payload = {
+        "identifier": identifier,
+        "password": password
+    }
+
+    response = requests.post(AtProtoAuthURL, json=payload,)
+
+    if response.status_code == 200:
+        data = response.json()
+        print("Access token:", data["accessJwt"])
+        token = data["accessJwt"]
+    else:
+        print("Authentication failed:", response.status_code)
+        print(response.text)
+
     blueskyURL = "https://api.bsky.social/xrpc/app.bsky.feed.getAuthorFeed"
     params = {
         "actor": "linusmediagroup.com",
         "limit": "100"
     }
-    response = requests.get(blueskyURL, params=params)
+    response = requests.get(blueskyURL, params=params, headers={'authorization': f'Bearer {token}'})
 
     if response.status_code == 200:
         postData = response.json()
-        print(json.dumps(postData, indent=1))
+
+        filtered_posts = []
+        for item in postData['feed']:
+            if 'post' in item and 'record' in item['post']:
+                filtered_posts.append({
+                    'createdAt': item['post']['record']['createdAt'],
+                    'text': item['post']['record']['text']
+                })
+
+        for post in filtered_posts:
+            # Parse the ISO format date
+            dt = datetime.fromisoformat(post["createdAt"].replace("Z", "+00:00"))
+            # Format as YYYY-MM-DD HH:MM:SS
+            post["createdAt"] = dt.strftime("%d-%m-%Y %H:%M:%S")
+        with open('postData.csv', 'w', newline='', encoding='utf-8') as csvfile:
+            fieldnames = ['displayName', 'createdAt', 'text']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+            writer.writeheader()
+
+            for post in filtered_posts:
+                writer.writerow(post)
+        print("CSV file 'postData.csv' has been created successfully.")
+
+
     else:
         print(f"Error: {response.status_code}")
         print(response.text)
 
 def main():
-    GetPostsFromSearch("Cambridge", "top", "en")
-    #GetPostsFromHandle()
+    #GetPostsFromSearch("Cambridge", "top", "en")
+    GetPostsFromHandle()
 
 if __name__ == '__main__':
     main()
