@@ -6,62 +6,37 @@ import os
 import pandas as pd
 
 
-def GetPostsFromSearch(search_term, sort_setting, language):
+def get_posts_from_search(search_term, sort_setting, language):
     """
-            Function fetches posts from the Bluesky Endpoint based on a search term.
+    Function fetches posts from the Bluesky Endpoint based on a search term.
 
-            Parameters:
-            search_term (str): Search term to look for in posts.
-            sort_setting (str): Options: "top" or "latest". Default is "latest"
-            language (str): # Uses IETF language subtags. Default is "en" (English).
+    Parameters:
+    search_term (str): Search term to look for in posts.
+    Sort_setting (str): Options: "top" or "latest". Default is "latest"
+    language (str): # Uses IETF language subtags. Default is "en" (English).
 
-            Returns:
-            None.
+    Returns:
+    None.
 
-           """
+    """
 
-    input_validation = False
+    language, search_term, sort_setting = validate_search_parameters(language, search_term, sort_setting)
 
-
-    while (input_validation == False):
-        validationScore = 0
-
-        if sort_setting not in ["top", "latest"]:
-            print("Invalid sort setting. Please enter 'top' or 'latest'.")
-            sort_setting = input("Enter sort setting (top/latest): ").strip().lower()
-        else:
-            validationScore += 1
-
-        if language not in ["en", "es", "fr", "de", "it", "pt", "zh", "ja", "ko"]:
-            print("Invalid language. Please enter a valid IETF language subtag.")
-            language = input("Enter language (en/es/fr/de/it/pt/zh/ja/ko): ").strip().lower()
-        else:
-            validationScore += 1
-
-        if search_term.isalpha() == False:
-            print("Search term must contain only alphabetic characters. Please enter a valid search term.")
-            search_term = input("Enter search term: ").strip()
-        else:
-            validationScore += 1
-
-        if (validationScore == 3):
-            input_validation = True
-            print("Input validation successful.")
-
-
-    bluesky_post_search_URL = "https://api.bsky.app/xrpc/app.bsky.feed.searchPosts"
+    bluesky_post_search_url = "https://api.bsky.app/xrpc/app.bsky.feed.searchPosts"
     params = {
         "q": search_term,
         "sort": sort_setting,
         "language": language,
-        "limit": "100" # Number of posts to return, between 1 and 100. Default value is 25.
+        "limit": "100" # The Number of posts to return, between 1 and 100. Default value is 25.
     }
 
     # Make the GET request to the Bluesky API
-    response = requests.get(bluesky_post_search_URL, params=params)
-
-    # Check if the request was successful
-    if response.status_code == 200:
+    try:
+        response = requests.get(bluesky_post_search_url, params=params)
+    except requests.exceptions.RequestException as e:
+        print(f"Error making request: {e}")
+        return
+    else:
         post_data = response.json()
 
         # Filter the posts to only include the displayName, createdAt, and text fields
@@ -74,21 +49,70 @@ def GetPostsFromSearch(search_term, sort_setting, language):
             for post in post_data["posts"]
         ]
 
-    else:
-        print(f"Error: {response.status_code}")
+    create_csv(filtered_posts)
 
-    createCSV(filtered_posts)
 
-def createCSV(filtered_posts):
-    """Procedure creates a CSV file from the filtered posts.
+def validate_search_parameters(language, search_term, sort_setting):
+    """
+    Function validates the input parameters for the search function.
 
-        Parameters:
-        filtered_posts (dict): Contains the filtered posts from the Bluesky API.
+    Parameters:
+    search_term (str): Search term to look for in posts.
+    Sort_setting (str): Options: "top" or "latest". Default is "latest"
+    language (str): # Uses IETF language subtags. Default is "en" (English).
 
-        Returns:
-        None.
+    Returns:
+    search_term (str): Validated search term.
+    Sort_setting (str): Validated sort setting.
+    language (str): Validated language code.
+    """
 
-       """
+    # Remove trailing whitespace from the input parameters
+    search_term = search_term.strip()
+    sort_setting = sort_setting.strip()
+    language = language.strip()
+    input_validation = False
+    while (input_validation == False):
+        validationScore = 0
+
+        # Validate the sort_setting parameters
+        if sort_setting not in ["top", "latest"]:
+            print("Invalid sort setting. Please enter 'top' or 'latest'.")
+            sort_setting = input("Enter sort setting (top/latest): ").strip().lower()
+        else:
+            validationScore += 1
+
+        # Validate the language parameters
+        if language not in ["en", "es", "fr", "de", "it", "pt", "zh", "ja", "ko"]:
+            print("Invalid language. Please enter a valid IETF language subtag.")
+            language = input("Enter language (en/es/fr/de/it/pt/zh/ja/ko): ").strip().lower()
+        else:
+            validationScore += 1
+
+        # Validate the search_term parameters
+        if search_term.isalpha() == False:
+            print("Search term must contain only alphabetic characters. Please enter a valid search term.")
+            search_term = input("Enter search term: ").strip()
+        else:
+            validationScore += 1
+
+        if (validationScore == 3):
+            input_validation = True
+            print("Input validation successful.")
+    return language, search_term, sort_setting
+
+
+def create_csv(filtered_posts):
+    """
+    Procedure creates a CSV file from the filtered posts.
+
+    Parameters:
+    filtered_posts (dict): Contains the filtered posts from the Bluesky API.
+
+    Returns:
+    None.
+
+    """
 
     # Converts createdAt field is in ISO time format
     for post in filtered_posts:
@@ -110,23 +134,31 @@ def createCSV(filtered_posts):
 
     # Remove rows with blank text fields and save to a new CSV file "post_data_filtered.csv"
     df = pd.read_csv('post_data.csv')
-    df_filtered = df[df['text'].notna() & (df['text'].str.strip() != '')]
+    df_filtered = df[df["text"].notna() & (df["text"].str.strip() != "")]
     print(f"Removed {df.shape[0] - df_filtered.shape[0]} rows with blank text fields")
-    df_filtered.to_csv('post_data_filtered.csv', index=False)
-    os.remove('post_data.csv')
+    df_filtered.to_csv("post_data_filtered.csv", index=False)
 
-def GetPostsFromHandle(actor):
-    """Function fetches posts from the Bluesky Endpoint based on a handle
+    try:
+        os.remove("post_data.csv")
+    except FileNotFoundError:
+        print("Original file not found, no need to remove.")
+    except PermissionError:
+        print("Permission denied when trying to remove file.")
 
-            Parameters:
-            actor (dict): Handle of the user whose feed you want to fetch
+def get_posts_from_handle(actor):
+    """
+    Function fetches posts from the Bluesky Endpoint based on a user handle
 
-            Returns:
-            None.
+    Parameters:
+    actor (dict): Handle of the user whose feed you want to fetch
 
-           """
+    Returns:
+    None.
+   """
 
-    # Load authentication variables from .env file
+    actor = handle_validation(actor)
+
+    #Load authentication variables from .env file
     load_dotenv()
     identifier = os.getenv("IDENTIFIER")
     password = os.getenv("PASSWORD")
@@ -139,23 +171,22 @@ def GetPostsFromHandle(actor):
     }
 
     # Make the POST request to the authentication endpoint
-    response = requests.post(at_proto_auth_url, json=payload,)
-
-    # Check if auth request was successful
-    if response.status_code == 200:
-        data = response.json()
-        token = data["accessJwt"]
-    else:
+    try:
+        response = requests.post(at_proto_auth_url, json=payload,)
+    except requests.exceptions.RequestException as e:
         print("Authentication failed:", response.status_code)
         print(response.text)
+    else:
+        data = response.json()
+        token = data["accessJwt"]
 
     # Make the GET request to the Bluesky API
     bluesky_url = "https://api.bsky.social/xrpc/app.bsky.feed.getAuthorFeed"
     params = {
         "actor": actor,
-        "limit": "100" # Number of posts to return, between 1 and 100. Default value is 25.
+        "limit": "100" # The Number of posts to return, between 1 and 100. Default value is 25.
     }
-    response = requests.get(bluesky_url, params=params, headers={'authorization': f'Bearer {token}'})
+    response = requests.get(bluesky_url, params=params, headers={"authorization": f"Bearer {token}"})
 
     # Check if the request was successful
     if response.status_code == 200:
@@ -163,22 +194,50 @@ def GetPostsFromHandle(actor):
 
         # Filter the posts to only include the createdAt and text fields
         filtered_posts = []
-        for item in postData['feed']:
-            if 'post' in item and 'record' in item['post']:
+        for item in postData["feed"]:
+            if "post" in item and "record" in item["post"]:
                 filtered_posts.append({
-                    'created_at': item['post']['record']['createdAt'],
-                    'text': item['post']['record']['text']
+                    "created_at": item["post"]["record"]["createdAt"],
+                    "text": item["post"]["record"]["text"]
                 })
 
-        createCSV(filtered_posts)
+        create_csv(filtered_posts)
 
     else:
         print(f"Error: {response.status_code}")
         print(response.text)
 
-def main():
-    GetPostsFromSearch("Cambridge", "tjhop", "en")
-    #GetPostsFromHandle("linusmediagroup.com")
 
-if __name__ == '__main__':
+def handle_validation(actor):
+    """
+        Function checks if the handle exists in the Bluesky API.
+
+        Parameters:
+        actor (str): Handle of the user whose feed you want to fetch
+
+        Returns:
+        actor (str): Validated handle of the user
+       """
+
+    actor = actor.strip()
+    handle_validation = False
+    handle_lookup_url = "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=" + actor
+
+    # Check identity endpoint to ensure that the handle exists
+    while (handle_validation == False):
+        response = requests.get(handle_lookup_url)
+
+        if response.status_code == 200:
+            print("Handle exists.")
+            handle_validation = True
+        else:
+            actor = input("Handle is invalid. Please enter a valid BlueSky Handle: ").strip()
+            handle_lookup_url = "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=" + actor
+    return actor
+
+def main():
+    get_posts_from_search("Cambridge", "latest", "en")
+    #get_posts_from_handle("linusmediagroup.com")
+
+if __name__ == "__main__":
     main()
