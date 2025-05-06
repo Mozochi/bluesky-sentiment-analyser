@@ -1,0 +1,9 @@
+# Core Libraries
+tqdm
+nltk
+
+# Data Handling
+pandas
+
+# Web Interface
+gradio
