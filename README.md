@@ -19,13 +19,10 @@ Python 3.9+
 python -m venv venv  
   
 ### Activate (Linux/macOS)  
-bash  
 source venv/bin/activate 
 ### Activate (Windows - Git Bash/WSL)  
-bash  
 source venv/Scripts/activate
 ### Activate (Windows - Cmd/PowerShell)  
-bash  
 .\venv\Scripts\activate  
 ```  
   
