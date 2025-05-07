@@ -1,5 +1,35 @@
 from GUI import GUI
-from GUI import GUI2
+from controller import Controller
+from analyse import SentimentAnalyser
+from BSkyAPI import get_posts_from_handle, get_posts_from_search
 
-app = GUI()
-app.launch()
+
+if __name__ == '__main__':
+
+    class SimpleBSkyAPIClient:
+        def __init__(self, search_func, handle_func):
+            self.get_posts_from_search = search_func
+            self.get_posts_from_handle = handle_func
+
+    PATH_TO_MODEL_FILE = "sentiment_analyser_model.json"
+
+    ### Instantiate Components
+    # 1. API Client
+    the_api_client = SimpleBSkyAPIClient(
+        search_func=get_posts_from_search,
+        handle_func=get_posts_from_handle
+    )
+
+    # 2. Sentiment Analyser
+    sentiment_analyser_instance = SentimentAnalyser()
+
+    # 3. Controller
+    app_controller = Controller(
+        api_client=the_api_client,
+        sentiment_analyser=sentiment_analyser_instance,
+        model_path=PATH_TO_MODEL_FILE
+    )
+
+    # 4. GUI
+    the_app_gui = GUI(controller_instance=app_controller)
+    the_app_gui.launch()
