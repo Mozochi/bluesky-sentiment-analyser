@@ -1,20 +1,9 @@
-import time
 import gradio as gr
 from gradio import themes
 
-from BSkyAPI import get_posts_from_search, get_posts_from_handle
-
-from analyse import model as sentiment_model_class
-
-
-sentiment_analyser_instance = sentiment_model_class()
-PATH_TO_MODEL = "sentiment_analyser_model.json"
-
-
-
-
 class GUI:
-    def __init__(self):
+    def __init__(self, controller_instance):
+        self.controller = controller_instance
 
         custom_css="""
         .center {
@@ -54,7 +43,7 @@ class GUI:
             )
 
             self.submit_button.click(
-                fn=self.predict_sentiment,
+                fn=self.predict_sentiment_wrapper,
                 inputs=[self.choice_var, self.text_input_var],
                 outputs=self.output_textbox
             )
@@ -71,63 +60,45 @@ class GUI:
                 label="Please enter a keyword to search for:",
                 placeholder="e.g. climate change"
             )
-        
-    def get_selected_choice(self):
-        return self.choice_var.value
 
-    def get_user_input_text(self):
-        return self.text_input_var.value  
-
-    def predict_sentiment(self, selected_choice, user_input_text):
-
-        if not user_input_text:
-            return "Error: Please enter some text."
-        
-        if selected_choice == "Profile":
-            API_data = get_posts_from_handle(user_input_text)
-
-            
-            if API_data.empty:
-                return "No posts from user."
-            
-            actual_texts_list = API_data['text'].tolist()
-
-            if not actual_texts_list:
-                return "No text content found in the fetched posts."
-
-            list_of_sentiment_strings = sentiment_analyser_instance.run_model(PATH_TO_MODEL, actual_texts_list)
-
-            
-            if isinstance(list_of_sentiment_strings, list):
-                return "\n".join(list_of_sentiment_strings)
-            else:
-                return list_of_sentiment_strings
-
-        
-        elif selected_choice == "Keyword":
-            API_data = get_posts_from_search(user_input_text, "latest", "en")
-
-            if API_data.empty:
-                return "No posted found for the keyword."
-            
-            actual_texts_list = API_data['text'].tolist()
-
-            if not actual_texts_list:
-                return "No text content found in the fetched posts."
-            
-            list_of_sentiment_strings = sentiment_analyser_instance.run_model(PATH_TO_MODEL, actual_texts_list)
-
-            if isinstance(list_of_sentiment_strings, list):
-                return "\n".join(list_of_sentiment_strings)
-            else:
-                return list_of_sentiment_strings
-
-
-        else:
-            print("Error: Invalid choice selected.")
-
-        
+    def predict_sentiment_wrapper(self, selected_choice: str, user_input_text: str) -> str:
+        # Call the controller's method to handle the logic
+        result = self.controller.process_analysis_request(selected_choice, user_input_text)
+        return result
 
     def launch(self):
         self.interface.launch()
+    
+if __name__ == '__main__':
+    from controller import Controller
+    from analyse import SentimentAnalyser
 
+    from BSkyAPI import get_posts_from_handle, get_posts_from_search
+
+    class SimpleBSkyAPIClient:
+        def __init__(self, search_func, handle_func):
+            self.get_posts_from_search = search_func
+            self.get_posts_from_handle = handle_func
+
+    PATH_TO_MODEL_FILE = "sentiment_analyser_model.json"
+
+    ### Instantiate Components
+    # 1. API Client
+    api_client = SimpleBSkyAPIClient(
+        search_func=get_posts_from_search,
+        handle_func=get_posts_from_handle
+    )
+
+    # 2. Sentiment Analyser
+    sentiment_analyser_instance = SentimentAnalyser()
+
+    # 3. Controller
+    app_controller = Controller(
+        api_client=api_client,
+        sentiment_analyser=sentiment_analyser_instance,
+        model_path=PATH_TO_MODEL_FILE
+    )
+
+    # 4. GUI
+    app_gui = GUI(controller_instance=app_controller)
+    app_gui.launch()

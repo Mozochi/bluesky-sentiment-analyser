@@ -1,68 +1,43 @@
-import GUI
-from BSkyAPI import get_posts_from_search, get_posts_from_handle
-from analyse import model as sentiment_model_class
-PATH_TO_MODEL = "sentiment_analyser_model.json"
+class Controller:
 
-class controler:
+    def __init__(self, api_client, sentiment_analyser, model_path: str):
+        self.api_client = api_client
+        self.sentiment_analyser = sentiment_analyser
+        self.model_path = model_path
 
-    def __init__(self, theGUI, thesentiment_anayiser, theAPI):
-        self.GUI = theGUI
-        self.sentiment_anayiser = thesentiment_anayiser
-        self.API = theAPI
-        self.PATH_TO_MODEL = "sentiment_analyser_model.json"
 
-    def call_api(self):
-        selected_choice = self.GUI.get_selected_choice()
-        user_input_text = self.GUI.get_input_text()
-        
+    def process_analysis_request(self, selected_choice: str, user_input_text: str) -> str:
         if not user_input_text:
-            return "Error: Please enter some text."
+            return "Error: Please enter some text"
         
+        api_data = None
         if selected_choice == "Profile":
-            API_data = get_posts_from_handle(user_input_text)
+            api_data = self.api_client.get_posts_from_handle(user_input_text)
 
             
-            if API_data.empty:
-                return "No posts from user."
+            if api_data.empty or api_data is None:
+                return "No posts from user, or an API error as occurred."
             
-            actual_texts_list = API_data['text'].tolist()
-
-            if not actual_texts_list:
-                return "No text content found in the fetched posts."
-
-            list_of_sentiment_strings = self.sentiment_analyser.run_model(PATH_TO_MODEL, actual_texts_list)
-
-            
-            if isinstance(list_of_sentiment_strings, list):
-                return "\n".join(list_of_sentiment_strings)
-            else:
-                return list_of_sentiment_strings
-
-        
         elif selected_choice == "Keyword":
-            API_data = get_posts_from_search(user_input_text, "latest", "en")
+            api_data = self.api_client.get_posts_from_search(user_input_text, "latest", "en")
 
-            if API_data.empty:
-                return "No posted found for the keyword."
-            
-            actual_texts_list = API_data['text'].tolist()
-
-            if not actual_texts_list:
-                return "No text content found in the fetched posts."
-            
-            list_of_sentiment_strings = self.sentiment_analyser.run_model(self.PATH_TO_MODEL, actual_texts_list)
-
-            if isinstance(list_of_sentiment_strings, list):
-                return "\n".join(list_of_sentiment_strings)
-            else:
-                return list_of_sentiment_strings
-
+            if api_data.empty or api_data is None:
+                return "No posted found for the keyword, or an API error as occurred."
 
         else:
-            print("Error: Invalid choice selected.")
+            return "Error: Invalid choice selected."
+        
+        actual_texts_list = api_data['text'].tolist()
+        if not actual_texts_list:
+            return "No text content found in fetched posts."
+        
+        analysis_result = self.sentiment_analyser.run_model(self.model_path, actual_texts_list)
 
-    def call_sentiment_anayliser(self):
-        return
-
-    def call_display_result(self):
-        return
+        if isinstance(analysis_result, str):
+            return analysis_result
+        elif isinstance(analysis_result, list):
+            if not analysis_result or (len(analysis_result) == 1 and analysis_result[0] == "No predictions were made."):
+                return "Sentiment analysis complete, but no predictions were generated."
+            return "\n".join(analysis_result)
+        else:
+            return "Error: Unexpected result type from sentiment analyser."

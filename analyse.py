@@ -6,7 +6,7 @@ from tqdm import tqdm
 import time
 
 
-class model:
+class SentimentAnalyser:
     def __init__(self, MODEL_FILEPATH=None):
         self.MODEL_FILEPATH = MODEL_FILEPATH
 
@@ -68,12 +68,12 @@ class model:
 
             ### Save the Newly Trained Model
             print(f"Saving the newly trained model to {MODEL_FILEPATH}...")
-            model.save(MODEL_FILEPATH)
+            current_model.save(MODEL_FILEPATH)
             print("Model saved.")
 
         ### Testing Phase 
         # Checking we have a model and vocabulary before proceeding
-        if not model or not vocab:
+        if not current_model or not vocab:
             raise RuntimeError("Model or vocabulary is not available. Cannot proceed with testing.")
 
         print("\n--- Testing ---")
