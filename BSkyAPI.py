@@ -212,7 +212,7 @@ def get_posts_from_handle(actor):
                     "text": item["post"]["record"]["text"]
                 })
 
-        create_csv(filtered_posts)
+        return pd.DataFrame(filtered_posts)
 
     else:
         print(f"Error: {response.status_code}")

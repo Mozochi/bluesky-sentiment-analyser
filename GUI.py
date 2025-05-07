@@ -2,7 +2,7 @@ import time
 import gradio as gr
 from gradio import themes
 
-from BSkyAPI import get_posts_from_search
+from BSkyAPI import get_posts_from_search, get_posts_from_handle
 
 from analyse import model as sentiment_model_class
 
@@ -39,8 +39,8 @@ class GUI:
             )
 
             self.text_input_var = gr.Textbox(
-                label="Please enter a Bluesky profile name/URL:",
-                placeholder="e.g. @linusmediagroup.com or https://bsky.app/profile/did:plc:ia5txeb3bq7a3u27mmjfv4kd",
+                label="Please enter the Bluesky profile name:",
+                placeholder="e.g. linusmediagroup.com",
                 show_label=True
             )
 
@@ -63,8 +63,8 @@ class GUI:
         # Updates the label and the placeholder of the text input based on the radio choice
         if current_choice == "Profile":
             return gr.update(
-                label="Please enter the profile name/URL:",
-                placeholder="e.g. @linusmediagroup.com or https://bsky.app/profile/did:plc:ia5txeb3bq7a3u27mmjfv4kd"
+                label="Please enter the BlueSky profile name:",
+                placeholder="e.g. linusmediagroup.com"
             )
         else: #Keyword
             return gr.update(
@@ -78,13 +78,31 @@ class GUI:
             return "Error: Please enter some text."
         
         if selected_choice == "Profile":
-            return 0
+            API_data = get_posts_from_handle(user_input_text)
+
+            
+            if API_data.empty:
+                return "No posts from user."
+            
+            actual_texts_list = API_data['text'].tolist()
+
+            if not actual_texts_list:
+                return "No text content found in the fetched posts."
+
+            list_of_sentiment_strings = sentiment_analyser_instance.run_model(PATH_TO_MODEL, actual_texts_list)
+
+            
+            if isinstance(list_of_sentiment_strings, list):
+                return "\n".join(list_of_sentiment_strings)
+            else:
+                return list_of_sentiment_strings
+
         
         elif selected_choice == "Keyword":
             API_data = get_posts_from_search(user_input_text, "latest", "en")
 
             if API_data.empty:
-                return "No posted found for the keyword"
+                return "No posted found for the keyword."
             
             actual_texts_list = API_data['text'].tolist()
 
