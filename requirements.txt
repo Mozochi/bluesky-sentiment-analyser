@@ -2,6 +2,7 @@
 tqdm
 nltk
 python-dotenv
+requests
 
 # Data Handling
 pandas
