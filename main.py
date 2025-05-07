@@ -15,7 +15,7 @@ if __name__ == '__main__':
 
     ### Instantiate Components
     # 1. API Client
-    the_api_client = SimpleBSkyAPIClient(
+    api_client = SimpleBSkyAPIClient(
         search_func=get_posts_from_search,
         handle_func=get_posts_from_handle,
         validate_handle_func=handle_validation
@@ -26,11 +26,11 @@ if __name__ == '__main__':
 
     # 3. Controller
     app_controller = Controller(
-        api_client=the_api_client,
+        api_client=api_client,
         sentiment_analyser=sentiment_analyser_instance,
         model_path=PATH_TO_MODEL_FILE
     )
 
     # 4. GUI
-    the_app_gui = GUI(controller_instance=app_controller)
-    the_app_gui.launch()
+    app_gui = GUI(controller_instance=app_controller)
+    app_gui.launch()

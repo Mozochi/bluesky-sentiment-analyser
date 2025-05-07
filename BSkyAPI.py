@@ -241,8 +241,9 @@ class bluesky_api():
             return False
 
 # Examples
-
-API = bluesky_API()
+"""
+API = bluesky_api()
 API.get_posts_from_search("Cambridge", "latest", "en")
 API.get_posts_from_handle("linusmediagroup.com")
+"""
 
