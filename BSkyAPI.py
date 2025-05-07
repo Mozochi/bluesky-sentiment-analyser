@@ -5,11 +5,7 @@ from dotenv import load_dotenv
 import os
 import pandas as pd
 
-class facebook_API():
-    
-    def __init__(self, controller_instance):
-        self.controller = controller_instance
-
+class bluesky_API():
     def get_posts_from_search(self, search_term, sort_setting, language):
         """
         Function fetches posts from the Bluesky Endpoint based on a search term.
@@ -244,8 +240,8 @@ class facebook_API():
             return False
 
 # Examples
-"""
-API = facebook_API()
-#get_posts_from_search("Cambridge", "latest", "en")
-#get_posts_from_handle("linusmediagroup.com")
-"""
+
+API = bluesky_API()
+API.get_posts_from_search("Cambridge", "latest", "en")
+API.get_posts_from_handle("linusmediagroup.com")
+
