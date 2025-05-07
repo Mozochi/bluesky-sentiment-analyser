@@ -109,7 +109,7 @@ class model:
 
             display_text = (original_text[:70] + '...') if len(original_text) > 70 else original_text
 
-            results.append(f"Text: '{display_text}'\nSentiment:{sentiment}")
+            results.append(f"Text: '{display_text}'\nSentiment:{sentiment}\n\n-------------------------------------------------------------\n")
 
         if not results:
             return ["No predictions were made."]
