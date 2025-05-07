@@ -3,9 +3,7 @@
 ## **1. Prerequisites:**
 Python 3.9+ 
 <br/>
-Create a .env file contain IDENTIFIER="" and PASSWORD="" using https://docs.bsky.app/
- <br/>
- <br/>
+<br/>
 
 ## **2. Clone the Repo**
  ```bash
@@ -38,6 +36,8 @@ source venv/Scripts/activate
 ```bash
 pip install -r requirements.txt
 ```
+<br/>
+Create a .env file contain IDENTIFIER="" and PASSWORD="" using https://docs.bsky.app/
 <br/>
 <br/>
 
