@@ -1,7 +1,8 @@
 # Setup
 
 ## **1. Prerequisites:**
-Python 3.9+
+Python 3.9+ 
+<br/>
 Create a .env file contain IDENTIFIER="" and PASSWORD="" using https://docs.bsky.app/
  <br/>
  <br/>
