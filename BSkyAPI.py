@@ -33,23 +33,41 @@ def get_posts_from_search(search_term, sort_setting, language):
     # Make the GET request to the Bluesky API
     try:
         response = requests.get(bluesky_post_search_url, params=params)
+        response.raise_for_status() # Raise an exception for HTTP errors
     except requests.exceptions.RequestException as e:
         print(f"Error making request: {e}")
-        return
+        return pd.DataFrame() # Return an empty dataframe on error
+    
+    post_data = response.json()
+    filtered_posts = []
+
+    if "posts" in post_data and isinstance(post_data["posts"], list):
+        for post_item in post_data["posts"]:
+            # Checking if post_item is a dictionary
+            if not isinstance(post_item, dict):
+                continue
+            author_info = post_item.get("author")
+            record_info = post_item.get("record")
+
+            # Checking author_info and record_info are dictionaries before trying to get sup-keys
+            if not isinstance(author_info, dict) or not isinstance(record_info, dict):
+                continue
+        
+            display_name = author_info.get("displayName", "Unknown User")
+
+            created_at_val = record_info.get("createdAt")
+            text_val = record_info.get("text")
+
+            if created_at_val is not None and text_val is not None:
+                filtered_posts.append({
+                    "display_name": display_name,
+                    "created_at": created_at_val,
+                    "text": text_val
+                })
     else:
-        post_data = response.json()
+        print("Warning: 'posts' key not found in API response or is not a list.")
 
-        # Filter the posts to only include the displayName, createdAt, and text fields
-        filtered_posts = [
-            {
-                "display_name": post["author"]["displayName"],
-                "created_at": post["record"]["createdAt"],
-                "text": post["record"]["text"]
-            }
-            for post in post_data["posts"]
-        ]
-
-    create_csv(filtered_posts)
+    return pd.DataFrame(filtered_posts)
 
 
 def validate_search_parameters(language, search_term, sort_setting):
@@ -67,39 +85,32 @@ def validate_search_parameters(language, search_term, sort_setting):
     language (str): Validated language code.
     """
 
-    # Remove trailing whitespace from the input parameters
+     # Remove trailing whitespace from the input parameters
     search_term = search_term.strip()
-    sort_setting = sort_setting.strip()
-    language = language.strip()
-    input_validation = False
-    while (input_validation == False):
-        validationScore = 0
+    sort_setting = sort_setting.strip().lower() # Convert to lower once
+    language = language.strip().lower() # Convert to lower once
+    
 
-        # Validate the sort_setting parameters
-        if sort_setting not in ["top", "latest"]:
-            print("Invalid sort setting. Please enter 'top' or 'latest'.")
-            sort_setting = input("Enter sort setting (top/latest): ").strip().lower()
-        else:
-            validationScore += 1
+    # Validate the sort_setting parameters
+    if sort_setting not in ["top", "latest"]:
+        # In a GUI context, you'd return an error or use a default
+        print("Invalid sort setting. Using default 'latest'.")
+        sort_setting = "latest" 
 
-        # Validate the language parameters
-        if language not in ["en", "es", "fr", "de", "it", "pt", "zh", "ja", "ko"]:
-            print("Invalid language. Please enter a valid IETF language subtag.")
-            language = input("Enter language (en/es/fr/de/it/pt/zh/ja/ko): ").strip().lower()
-        else:
-            validationScore += 1
+    # Validate the language parameters
+    if language not in ["en", "es", "fr", "de", "it", "pt", "zh", "ja", "ko"]:
 
-        # Validate the search_term parameters
-        if search_term.isalpha() == False:
-            print("Search term must contain only alphabetic characters. Please enter a valid search term.")
-            search_term = input("Enter search term: ").strip()
-        else:
-            validationScore += 1
+        print("Invalid language. Using default 'en'.")
+        language = "en"
 
-        if (validationScore == 3):
-            input_validation = True
-            print("Input validation successful.")
+    # Validate the search_term parameters
+    if not search_term: # Check if search term is empty
+
+        print("Warning: Search term is empty.")
+    
+    print("Input validation (non-interactive for GUI) complete.")
     return language, search_term, sort_setting
+
 
 
 def create_csv(filtered_posts):

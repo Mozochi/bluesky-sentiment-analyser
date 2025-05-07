@@ -1,57 +1,108 @@
 import time
 import gradio as gr
-import analyse
+from gradio import themes
 
-MODEL_FILEPATH = "sentiment_analyser_model.json"
+from BSkyAPI import get_posts_from_search
+
+from analyse import model as sentiment_model_class
+
+
+sentiment_analyser_instance = sentiment_model_class()
+PATH_TO_MODEL = "sentiment_analyser_model.json"
+
+
+
 
 class GUI:
     def __init__(self):
-        with gr.Blocks(css=".center {text-align: center; margin-left: auto; margin-right: auto;}") as self.interface:
-            gr.Markdown("# Facebook sentiment tantaliser", elem_classes="center")
 
-            self.choice = gr.Radio(
-                ["Profile", "Key word"],
-                label="Choose one:",
-                value="Profile"
+        custom_css="""
+        .center {
+            text-align: center; 
+            margin-left: auto; 
+            margin-right: auto;
+        }
+        .gradio-container {
+            max-width: 1200px !important;
+            margin: auto !important;
+        }
+        """
+
+        with gr.Blocks(css=custom_css, theme=themes.Ocean()) as self.interface:
+            gr.Markdown("# Sentiment Analyser", elem_classes="center")
+
+            self.choice_var = gr.Radio(
+                ["Profile", "Keyword"],
+                label="Analyse by:",
+                value="Profile", # Default Value
+                info="Select whether you want to analyse a profile or search by a keyword."
             )
 
-            self.input_label = gr.Textbox(
-                value=self.get_input_text(),
-                interactive=False,
-                label="",
-                elem_classes="invisible-box"
+            self.text_input_var = gr.Textbox(
+                label="Please enter a Bluesky profile name/URL:",
+                placeholder="e.g. @linusmediagroup.com or https://bsky.app/profile/did:plc:ia5txeb3bq7a3u27mmjfv4kd",
+                show_label=True
             )
 
-            self.text_input = gr.Textbox(label="Input")
-            self.submit = gr.Button("Submit")
-            self.output = gr.Textbox(label="Result:")
+            self.submit_button = gr.Button("Submit", variant="primary")
+            self.output_textbox = gr.Textbox(label="Result:", interactive=False, lines=10)
 
-            self.choice.change(
-                fn=self.update_input_text_label,
-                inputs=self.choice,
-                outputs=self.input_label
+            self.choice_var.change(
+                fn=self.update_input_text_label_and_placeholder,
+                inputs=self.choice_var,
+                outputs=self.text_input_var
             )
 
-            self.submit.click(
-                fn=self.predict,
-                inputs=[self.choice, self.text_input],
-                outputs=self.output
+            self.submit_button.click(
+                fn=self.predict_sentiment,
+                inputs=[self.choice_var, self.text_input_var],
+                outputs=self.output_textbox
             )
 
-    def get_input_text(self):
-        if self.choice.value == "Profile":
-            return "Please enter the Facebook profile."
+    def update_input_text_label_and_placeholder(self, current_choice):
+        # Updates the label and the placeholder of the text input based on the radio choice
+        if current_choice == "Profile":
+            return gr.update(
+                label="Please enter the profile name/URL:",
+                placeholder="e.g. @linusmediagroup.com or https://bsky.app/profile/did:plc:ia5txeb3bq7a3u27mmjfv4kd"
+            )
+        else: #Keyword
+            return gr.update(
+                label="Please enter a keyword to search for:",
+                placeholder="e.g. climate change"
+            )
+
+    def predict_sentiment(self, selected_choice, user_input_text):
+
+        if not user_input_text:
+            return "Error: Please enter some text."
+        
+        if selected_choice == "Profile":
+            return 0
+        
+        elif selected_choice == "Keyword":
+            API_data = get_posts_from_search(user_input_text, "latest", "en")
+
+            if API_data.empty:
+                return "No posted found for the keyword"
+            
+            actual_texts_list = API_data['text'].tolist()
+
+            if not actual_texts_list:
+                return "No text content found in the fetched posts."
+            
+            list_of_sentiment_strings = sentiment_analyser_instance.run_model(PATH_TO_MODEL, actual_texts_list)
+
+            if isinstance(list_of_sentiment_strings, list):
+                return "\n".join(list_of_sentiment_strings)
+            else:
+                return list_of_sentiment_strings
+
+
         else:
-            return "Please enter a keyword."
+            print("Error: Invalid choice selected.")
 
-    def update_input_text_label(self, choice):
-        self.choice.value = choice
-        return self.get_input_text()
-
-    def predict(self, choice, text_input):
-        model = analyse.model()
-        result = model.run_model(MODEL_FILEPATH, [text_input])
-        return result
+        
 
     def launch(self):
         self.interface.launch()
