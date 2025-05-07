@@ -1,6 +1,7 @@
 # Core Libraries
 tqdm
 nltk
+python-dotenv
 
 # Data Handling
 pandas
