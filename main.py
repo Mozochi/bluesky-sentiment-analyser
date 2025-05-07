@@ -9,16 +9,18 @@ if __name__ == '__main__':
         def __init__(self, search_func, handle_func, validate_handle_func):
             self.get_posts_from_search = search_func
             self.get_posts_from_handle = handle_func
-            self.handle_validation = validate_handle_func
+            self.handle_validation = validate_handle_func  
 
     PATH_TO_MODEL_FILE = "sentiment_analyser_model.json"
 
     ### Instantiate Components
     # 1. API Client
+    api_instance = bluesky_api()
+
     api_client = SimpleBSkyAPIClient(
-        search_func=bluesky_api.get_posts_from_search,
-        handle_func=bluesky_api.get_posts_from_handle,
-        validate_handle_func=bluesky_api.handle_validation
+        search_func=api_instance.get_posts_from_search,
+        handle_func=api_instance.get_posts_from_handle,
+        validate_handle_func=api_instance.handle_validation
     )
 
     # 2. Sentiment Analyser
