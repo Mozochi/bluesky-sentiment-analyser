@@ -71,6 +71,12 @@ class GUI:
                 label="Please enter a keyword to search for:",
                 placeholder="e.g. climate change"
             )
+        
+    def get_selected_choice(self):
+        return self.choice_var.value
+
+    def get_user_input_text(self):
+        return self.text_input_var.value  
 
     def predict_sentiment(self, selected_choice, user_input_text):
 
