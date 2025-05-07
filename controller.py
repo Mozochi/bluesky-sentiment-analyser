@@ -30,7 +30,7 @@ class Controller:
 
         return "Data fetched successfully. Ready for analysis."
     
-    def process_analysis(self, selected_choice: str, user_input_text: str) -> str:
+    def process_analysis_request(self, selected_choice: str, user_input_text: str) -> str:
         if not self.actual_texts_list:
             get_result = self.get_sentiments(selected_choice, user_input_text)
             if "Error" in get_result or "invalid" in get_result.lower() or "No" in get_result:

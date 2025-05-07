@@ -1,7 +1,7 @@
 from GUI import GUI
 from controller import Controller
 from analyse import SentimentAnalyser
-from BSkyAPI import get_posts_from_handle, get_posts_from_search, handle_validation
+from BSkyAPI import *
 
 if __name__ == '__main__':
 
@@ -16,9 +16,9 @@ if __name__ == '__main__':
     ### Instantiate Components
     # 1. API Client
     api_client = SimpleBSkyAPIClient(
-        search_func=get_posts_from_search,
-        handle_func=get_posts_from_handle,
-        validate_handle_func=handle_validation
+        search_func=bluesky_api.get_posts_from_search,
+        handle_func=bluesky_api.get_posts_from_handle,
+        validate_handle_func=bluesky_api.handle_validation
     )
 
     # 2. Sentiment Analyser
