@@ -30,7 +30,7 @@ class controler:
             if not actual_texts_list:
                 return "No text content found in the fetched posts."
 
-            list_of_sentiment_strings = sentiment_analyser_instance.run_model(PATH_TO_MODEL, actual_texts_list)
+            list_of_sentiment_strings = self.sentiment_analyser.run_model(PATH_TO_MODEL, actual_texts_list)
 
             
             if isinstance(list_of_sentiment_strings, list):
