@@ -18,7 +18,7 @@ class GUI:
         """
 
         with gr.Blocks(css=custom_css, theme=themes.Ocean()) as self.interface:
-            gr.Markdown("# Sentiment Analyser", elem_classes="center")
+            gr.Markdown("# Bluesky Sentiment Analyser", elem_classes="center")
 
             self.choice_var = gr.Radio(
                 ["Profile", "Keyword"],
@@ -34,7 +34,8 @@ class GUI:
             )
 
             self.submit_button = gr.Button("Submit", variant="primary")
-            self.output_textbox = gr.Textbox(label="Result:", interactive=False, lines=10)
+            self.output_textbox = gr.Textbox(label="Result:", interactive=False, lines=10, show_copy_button=True)
+            self.output_stats_textbox = gr.Textbox(label="Stats:", interactive=False, lines=3, show_copy_button=True)
 
             self.choice_var.change(
                 fn=self.update_input_text_label_and_placeholder,
@@ -45,7 +46,7 @@ class GUI:
             self.submit_button.click(
                 fn=self.predict_sentiment_wrapper,
                 inputs=[self.choice_var, self.text_input_var],
-                outputs=self.output_textbox
+                outputs=[self.output_textbox, self.output_stats_textbox]
             )
 
     def update_input_text_label_and_placeholder(self, current_choice):
@@ -61,10 +62,11 @@ class GUI:
                 placeholder="e.g. climate change"
             )
 
-    def predict_sentiment_wrapper(self, selected_choice: str, user_input_text: str) -> str:
+    def predict_sentiment_wrapper(self, selected_choice: str, user_input_text: str)-> tuple[str, str]:
         # Call the controller's method to handle the logic
-        result = self.controller.process_analysis_request(selected_choice, user_input_text)
-        return result
+        main_result, stats_result = self.controller.process_analysis_request(selected_choice, user_input_text)
+        return main_result, stats_result
+
 
     def launch(self):
         self.interface.launch()

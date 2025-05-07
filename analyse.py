@@ -79,6 +79,8 @@ class SentimentAnalyser:
         print("\n--- Testing ---")
         predictions = sentiment_analyser.predict(current_model, texts, vocab)
 
+        sentiment_counts = {"Positive": 0, "Neutral": 0, "Negative": 0}
+
 
         print("\n--- Predictions ---")
         results = []
@@ -87,10 +89,13 @@ class SentimentAnalyser:
             # Determine sentiment text based on the prediction label (0 (Negative) or 1 (1 Positive))
             if prediction == 1:
                 sentiment = "Neutral"
+                sentiment_counts["Neutral"] += 1
             elif prediction == 2:
                 sentiment = "Positive"
+                sentiment_counts["Positive"] += 1
             else:
                 sentiment = "Negative"
+                sentiment_counts["Negative"] += 1
 
             try:
                 print(f"'{original_text}' ---> {prediction} ({sentiment})")
@@ -112,9 +117,9 @@ class SentimentAnalyser:
             results.append(f"Text: '{display_text}'\nSentiment:{sentiment}\n\n-------------------------------------------------------------\n")
 
         if not results:
-            return ["No predictions were made."]
-        return results
+            return "No predictions were made.", {"Positive": 0, "Neutral": 0, "Negative": 0}
+        return results, sentiment_counts
 
 
 if __name__ == '__main__':
-    print("Do not run analyse.py directly. Instead run controller.py.")
+    print("Do not run analyse.py directly. Instead run main.py.")
