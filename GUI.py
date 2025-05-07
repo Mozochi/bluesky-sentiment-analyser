@@ -64,17 +64,8 @@ class GUI:
 
     def predict_sentiment_wrapper(self, selected_choice: str, user_input_text: str)-> tuple[str, str]:
         # Call the controller's method to handle the logic
-        """
         main_result, stats_result = self.controller.process_analysis_request(selected_choice, user_input_text)
         return main_result, stats_result
-        """
-        result = self.controller.process_analysis_request(selected_choice, user_input_text)
-        
-        if "Error" in result or "invalid" in result.lower():
-            return result, ""
-        
-        stats = "IDK about the stat"
-        return result, stats
 
 
     def launch(self):
