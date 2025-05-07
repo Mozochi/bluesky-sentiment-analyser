@@ -12,11 +12,13 @@ class Controller:
         
         api_data = None
         if selected_choice == "Profile":
-            api_data = self.api_client.get_posts_from_handle(user_input_text)
+            api_data = self.api_client.handle_validation(user_input_text)
 
-            
-            if api_data.empty or api_data is None:
-                return "No posts from user, or an API error as occurred."
+            if api_data is False:
+                return "The profile name is invalid or does not exist. Please try again."
+            else:
+                api_data = self.api_client.get_posts_from_handle(user_input_text)
+
             
         elif selected_choice == "Keyword":
             api_data = self.api_client.get_posts_from_search(user_input_text, "latest", "en")

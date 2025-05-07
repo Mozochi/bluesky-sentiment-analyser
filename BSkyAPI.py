@@ -167,8 +167,6 @@ def get_posts_from_handle(actor):
     None.
    """
 
-    actor = handle_validation(actor)
-
     #Load authentication variables from .env file
     load_dotenv()
     identifier = os.getenv("IDENTIFIER")
@@ -231,20 +229,15 @@ def handle_validation(actor):
        """
 
     actor = actor.strip()
-    handle_validation = False
     handle_lookup_url = "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=" + actor
 
     # Check identity endpoint to ensure that the handle exists
-    while (handle_validation == False):
-        response = requests.get(handle_lookup_url)
+    response = requests.get(handle_lookup_url)
 
-        if response.status_code == 200:
-            print("Handle exists.")
-            handle_validation = True
-        else:
-            actor = input("Handle is invalid. Please enter a valid BlueSky Handle: ").strip()
-            handle_lookup_url = "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=" + actor
-    return actor
+    if response.status_code == 200:
+        return True
+    else:
+        return False
 
 def main():
     get_posts_from_search("Cambridge", "latest", "en")
