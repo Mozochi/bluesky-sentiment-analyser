@@ -19,13 +19,13 @@ Python 3.9+
 python -m venv venv  
   
 ### Activate (Linux/macOS)  
-```bash  
-source venv/bin/activate```  
+bash  
+source venv/bin/activate 
 ### Activate (Windows - Git Bash/WSL)  
-```bash  
-source venv/Scripts/activate```  
+bash  
+source venv/Scripts/activate
 ### Activate (Windows - Cmd/PowerShell)  
-```bash  
+bash  
 .\venv\Scripts\activate  
 ```  
   
@@ -61,8 +61,4 @@ Built using Gradio (https://www.gradio.app/).
 
 ## **Credits**
 
-Ben Whiting 
-Josh Exton
-Joshua Thomas
-Lewis Jones 
-Millie Green 
+Ben Whiting, Josh Exton, Joshua Thomas, Lewis Jones, Millie Green 
