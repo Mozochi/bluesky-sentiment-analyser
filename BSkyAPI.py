@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 import os
 import pandas as pd
 
-class facebook_API():
+class bluesky_api():
     
     def __init__(self, controller_instance):
         self.controller = controller_instance
