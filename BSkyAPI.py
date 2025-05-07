@@ -5,7 +5,8 @@ from dotenv import load_dotenv
 import os
 import pandas as pd
 
-class bluesky_API():
+class bluesky_api():
+
     def get_posts_from_search(self, search_term, sort_setting, language):
         """
         Function fetches posts from the Bluesky Endpoint based on a search term.

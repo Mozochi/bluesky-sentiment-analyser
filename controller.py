@@ -8,7 +8,7 @@ class Controller:
 
     def get_sentiments(self, selected_choice: str, user_input_text: str) -> str:
         if not user_input_text:
-            return "Error: Please enter some text"
+            return "Error: Please enter some text", empty_stats_string
         
         api_data = None
         if selected_choice == "Profile":
@@ -22,7 +22,7 @@ class Controller:
             if api_data is None or api_data.empty:
                 return "No posts found for the keyword, or an API error has occurred."
         else:
-            return "Error: Invalid choice selected."
+            return "Error: Invalid choice selected.", empty_stats_string
         
         self.actual_texts_list = api_data['text'].tolist()
         if not self.actual_texts_list:
@@ -38,12 +38,26 @@ class Controller:
         
         analysis_result = self.sentiment_analyser.run_model(self.model_path, self.actual_texts_list)
 
-        if isinstance(analysis_result, str):
-            return analysis_result
-        elif isinstance(analysis_result, list):
+        if isinstance(analysis_result, str) and sentiment_counts is None:
+            return analysis_result, empty_stats_string # Error from sentiment analyser
+
+
+        main_output_string = ""
+        if isinstance(analysis_result, list):
             if not analysis_result or (len(analysis_result) == 1 and analysis_result[0] == "No predictions were made."):
-                return "Sentiment analysis complete, but no predictions were generated."
-            return "\n".join(analysis_result)
+                main_output_string = "Sentiment analysis completed, but no specific predictions were generated."
+            else:
+                main_output_string = "\n".join(analysis_result)
+        else: 
+            main_output_string = "Error: Unexpected result type from sentiment analyser details."
+        
+        stats_output_string = ""
+        if sentiment_counts:
+            stats_output_string = (
+                f"Positive: {sentiment_counts.get('Positive', 0)}\n"
+                f"Neutral: {sentiment_counts.get('Neutral', 0)}\n"
+                f"Negative: {sentiment_counts.get('Negative', 0)}"
+            )
         else:
             return "Error: Unexpected result type from sentiment analyser."
         
