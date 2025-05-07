@@ -5,7 +5,7 @@ Python 3.9+
  <br/>
  <br/>
 
-  ## **2. Clone the Repo**
+## **2. Clone the Repo**
  ```bash
  git clone https://github.com/Mozochi/sentiment-analysis-TSE-Project.git
 ```
@@ -31,15 +31,16 @@ source venv/Scripts/activate
 ```
 <br/>
 <br/>
+
 ## **4. Install Dependencies**
 ```bash
 pip install -r requirements.txt
 ```
 <br/>
 <br/>
+
 ## **5. Data (For training)**
 https://www.kaggle.com/datasets/jp797498e/twitter-entity-sentiment-analysis?resource=download
-
 <br/>
 <br/>
 
