@@ -1,9 +1,9 @@
-﻿![](https://raw.githubusercontent.com/Mozochi/sentiment-analysis-TSE-Project/refs/heads/master/github-header-image.png?token=GHSAT0AAAAAADDK6BSSNLTVFYIMOGOHYMZ62A34PNQ)
+﻿![](https://i.imgur.com/UtR64IU.png)
 This tool analyses the emotional sentiment of posts posted to the social media platform Bluesky https://bsky.app/
 
 Posts can be searched via a user handle or by search term. Up to 100 posts can be retrieved at any time. Supports both 'Top' and 'Latest" search modes.
 
-![](https://raw.githubusercontent.com/Mozochi/sentiment-analysis-TSE-Project/refs/heads/master/app-screencapture.png?token=GHSAT0AAAAAADDK6BSTVGWMBY4DGMWHTXGA2A334WQ)
+![](https://i.imgur.com/7NJNVqK.png)
  
  ## **Installation**  
 ### **1. Prerequisites:**  
