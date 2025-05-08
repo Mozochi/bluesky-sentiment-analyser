@@ -25,15 +25,15 @@ if __name__ == '__main__':
     )
 
     # 2. Sentiment Analyser
-    sentiment_analyser_instance = SentimentAnalyser()
+    the_sentiment_analyser_instance = SentimentAnalyser()
 
     # 3. Controller
-    app_controller = Controller(
+    the_app_controller = Controller(
         api_client=api_client,
-        sentiment_analyser=sentiment_analyser_instance,
+        sentiment_analyser=the_sentiment_analyser_instance,
         model_path=PATH_TO_MODEL_FILE
     )
 
     # 4. GUI
-    app_gui = GUI(controller_instance=app_controller)
-    app_gui.launch()
+    the_app_gui = GUI(controller_instance=the_app_controller)
+    the_app_gui.launch()
