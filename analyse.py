@@ -30,10 +30,10 @@ class SentimentAnalyser:
 
             # Training Data
             try:
-                df = pd.read_csv('training.csv')
+                df = pd.read_csv('training_processed.csv')
                 sentiment_col_idx = df.columns.get_loc('sentiment')
             except FileNotFoundError:
-                print(f"Error: 'training.csv' not found at {MODEL_FILEPATH}. Cannot train a new model...")
+                print(f"Error: 'training_processed.csv' not found at {MODEL_FILEPATH}. Cannot train a new model...")
                 return "Error: Training data not found. Cannot proceed."
             except KeyError:
                 print("Error: 'sentiment' column not found in DataFrame.")
