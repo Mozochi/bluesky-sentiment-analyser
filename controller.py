@@ -22,7 +22,7 @@ class Controller:
         self.sentiment_analyser = sentiment_analyser
         self.model_path = model_path
 
-    def process_analysis_request(self, selected_choice: str, user_input_text: str, search_type: str) -> tuple[str, str, str]:
+    def process_analysis_request(self, selected_choice: str, user_input_text: str, search_type: str) -> tuple[str, str]:
         """
         Processes the sentiment analysis request based on the user's input and choice.
 
