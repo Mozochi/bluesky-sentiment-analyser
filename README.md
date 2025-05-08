@@ -53,7 +53,7 @@ python main.py
   
 ## **Acknowledgements**  
   
-This project uses the Twitter Sentiment Analysis dataset (https://www.kaggle.com/datasets/jp797498e/twitter-entity-sentiment-analysis?resource=download) by passionate-nlp. Please cite their work if you use the dataset.  
+This project uses the Sentiment Analysis Dataset (https://www.kaggle.com/datasets/abhi8923shriv/sentiment-analysis-dataset) by Abhishek Shrivastava. Please cite their work if you use the dataset.  
 Built using Gradio (https://www.gradio.app/).
 
 ## **Credits**

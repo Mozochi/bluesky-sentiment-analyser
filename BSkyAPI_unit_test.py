@@ -4,8 +4,7 @@ import json
 from datetime import datetime
 import os
 import pandas as pd
-
-from BSkyAPI import BlueskyAPI  # Assuming the class is in bluesky_api.py
+from BSkyAPI import BlueskyAPI
 
 class TestBlueskyAPI(unittest.TestCase):
     @patch("requests.get")
