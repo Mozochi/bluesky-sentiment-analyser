@@ -60,5 +60,7 @@ Built using Gradio (https://www.gradio.app/).
 
 Ben Whiting, Josh Exton, Joshua Thomas, Lewis Jones, Millie Green 
 
+To reach out, please email Joshua Thomas at [28005766@students.lincoln.ac.uk](mailto:28005766@students.lincoln.ac.uk)
+
 ## **License**
 [MIT](https://choosealicense.com/licenses/mit/)
