@@ -107,46 +107,6 @@ class BlueskyAPI:
         print("Input validation (non-interactive for GUI) complete.")
         return language, search_term, sort_setting
 
-    def create_csv(self, filtered_posts):
-        """
-        Procedure creates a CSV file from the filtered posts.
-
-        Parameters:
-        filtered_posts (dict): Contains the filtered posts from the Bluesky API.
-
-        Returns:
-        None.
-        """
-        # Converts createdAt field in ISO time format
-        for post in filtered_posts:
-            # Parse the ISO format date
-            dt = datetime.fromisoformat(post["created_at"].replace("Z", "+00:00"))
-            # Format as YYYY-MM-DD HH:MM:SS
-            post["created_at"] = dt.strftime("%d-%m-%Y %H:%M:%S")
-
-        # Create a CSV file and write the filtered posts to it
-        with open("post_data.csv", "w", newline="", encoding="utf-8") as csv_file:
-            field_names = ["display_name", "created_at", "text"]
-            writer = csv.DictWriter(csv_file, fieldnames=field_names)
-            writer.writeheader()
-
-            for post in filtered_posts:
-                writer.writerow(post)
-
-        print("CSV file 'post_data.csv' has been created successfully.")
-
-        # Remove rows with blank text fields and save to a new CSV file "post_data_filtered.csv"
-        df = pd.read_csv('post_data.csv')
-        df_filtered = df[df["text"].notna() & (df["text"].str.strip() != "")]
-        print(f"Removed {df.shape[0] - df_filtered.shape[0]} rows with blank text fields")
-        df_filtered.to_csv("post_data_filtered.csv", index=False)
-
-        try:
-            os.remove("post_data.csv")
-        except FileNotFoundError:
-            print("Original file not found, no need to remove.")
-        except PermissionError:
-            print("Permission denied when trying to remove file.")
 
     def get_posts_from_handle(self, actor):
         """

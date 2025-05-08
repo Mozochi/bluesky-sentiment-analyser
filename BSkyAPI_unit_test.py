@@ -7,7 +7,6 @@ import pandas as pd
 
 from BSkyAPI import BlueskyAPI  # Assuming the class is in bluesky_api.py
 
-
 class TestBlueskyAPI(unittest.TestCase):
     @patch("requests.get")
     def test_get_posts_from_search(self, mock_get):
@@ -94,57 +93,5 @@ class TestBlueskyAPI(unittest.TestCase):
         result = api.handle_validation("invalid_handle")
         self.assertFalse(result)
 
-    @patch("requests.get")
-    def test_create_csv(self, mock_get):
-        """Test the 'create_csv' method."""
-        # Prepare some test posts data
-        posts = [
-            {"display_name": "User1", "created_at": "2025-05-08T00:00:00Z", "text": "Hello World"},
-            {"display_name": "User2", "created_at": "2025-05-08T01:00:00Z", "text": "Test Post"}
-        ]
-        
-        # Mock file I/O by using StringIO instead of actual file creation
-        from io import StringIO
-        import csv
 
-        # Create a temporary "file"
-        temp_file = StringIO()
-        writer = csv.DictWriter(temp_file, fieldnames=["display_name", "created_at", "text"])
-        writer.writeheader()
-        writer.writerows(posts)
-        
-        # Test create_csv method
-        api = BlueskyAPI()
-        api.create_csv(posts)
 
-        # Check if the file was created successfully
-        # This part could be further expanded with actual file checks, but here we are mocking it.
-        self.assertTrue(os.path.exists("post_data.csv"))
-
-        # Read the file to ensure content
-        df = pd.read_csv("post_data.csv")
-        self.assertEqual(df.shape[0], 2)
-        self.assertEqual(df.columns.tolist(), ['display_name', 'created_at', 'text'])
-
-    @patch("requests.get")
-    def test_create_csv_filtered(self, mock_get):
-        """Test filtered CSV creation for empty text fields."""
-        # Prepare some test posts data
-        posts = [
-            {"display_name": "User1", "created_at": "2025-05-08T00:00:00Z", "text": "Hello World"},
-            {"display_name": "User2", "created_at": "2025-05-08T01:00:00Z", "text": "Test Post"},
-            {"display_name": "User3", "created_at": "2025-05-08T02:00:00Z", "text": ""}
-        ]
-
-        api = BlueskyAPI()
-        # Mock file I/O by using StringIO instead of actual file creation
-        from io import StringIO
-        import csv
-
-        # Mock the CSV creation process
-        api.create_csv(posts)
-
-        # Check if the file "post_data_filtered.csv" is created
-        df_filtered = pd.read_csv("post_data_filtered.csv")
-        self.assertEqual(df_filtered.shape[0], 2)  # One row should be filtered out due to blank text
-        self.assertEqual(df_filtered.columns.tolist(), ['display_name', 'created_at', 'text'])
