@@ -54,9 +54,9 @@ class Controller:
             stats_output_string = (
 
                     f"Total posts analysed: {sentiment_counts.get('Total', 0)}\n" + \
-                    f"Positive: {sentiment_counts.get('Positive', 0)} ({round(sentiment_counts.get('Positive', 0) / sentiment_counts.get('Total'), 2)}%)\n" + \
-                    f"Neutral: {sentiment_counts.get('Neutral', 0)} ({round(sentiment_counts.get('Neutral', 0) / sentiment_counts.get('Total'), 2)}%)\n" + \
-                    f"Negative: {sentiment_counts.get('Negative', 0)} ({round(sentiment_counts.get('Negative', 0) / sentiment_counts.get('Total'), 2)}%)"
+                    f"Positive: {sentiment_counts.get('Positive', 0)} ({round(sentiment_counts.get('Positive', 0) / sentiment_counts.get('Total'), 2) * 100}%)\n" + \
+                    f"Neutral: {sentiment_counts.get('Neutral', 0)} ({round(sentiment_counts.get('Neutral', 0) / sentiment_counts.get('Total'), 2) * 100}%)\n" + \
+                    f"Negative: {sentiment_counts.get('Negative', 0)} ({round(sentiment_counts.get('Negative', 0) / sentiment_counts.get('Total'), 2) * 100}%)"
             )
         else:
             stats_output_string = empty_stats_string
