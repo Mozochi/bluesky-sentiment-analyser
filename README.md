@@ -59,3 +59,6 @@ Built using Gradio (https://www.gradio.app/).
 ## **Credits**
 
 Ben Whiting, Josh Exton, Joshua Thomas, Lewis Jones, Millie Green 
+
+## **License**
+[MIT](https://choosealicense.com/licenses/mit/)
