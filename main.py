@@ -16,7 +16,7 @@ if __name__ == '__main__':
 
     ### Instantiate Components
     # 1. API Client
-    api_instance = bluesky_api()
+    api_instance = BlueskyAPI()
 
     api_client = SimpleBSkyAPIClient(
         search_func=api_instance.get_posts_from_search,
