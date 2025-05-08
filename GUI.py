@@ -4,8 +4,6 @@ from gradio import themes
 
 class GUI:
     def __init__(self, controller_instance):
-        self.controller = controller_instance
-
         custom_css = """
         .center {
             text-align: center; 
@@ -17,6 +15,7 @@ class GUI:
             margin: auto !important;
         }
         """
+        self.controller = controller_instance
 
         with gr.Blocks(css=custom_css, theme=themes.Ocean()) as self.interface:
             gr.Markdown("# Bluesky Sentiment Analyser", elem_classes="center")
@@ -34,7 +33,6 @@ class GUI:
                 show_label=True
             )
 
-            # Add a new radio button for search type that is initially hidden
             self.search_type_var = gr.Radio(
                 ["Top", "Latest"],
                 label="Search type:",
@@ -60,24 +58,27 @@ class GUI:
             )
 
     def update_input_text_label_and_placeholder(self, current_choice):
-        # Updates the label and the placeholder of the text input based on the radio choice
         if current_choice == "Profile":
-            return gr.update(
-                label="Please enter the BlueSky profile name:",
-                placeholder="e.g. linusmediagroup.com"
-            ), gr.update(visible=False)
+            return (
+                gr.update(
+                    label="Please enter the BlueSky profile name:",
+                    placeholder="e.g. linusmediagroup.com"
+                ),
+                gr.update(visible=False)
+            )
         else:  # Keyword
-            return gr.update(
-                label="Please enter a keyword to search for:",
-                placeholder="e.g. climate change"
-            ), gr.update(visible=True)
+            return (
+                gr.update(
+                    label="Please enter a keyword to search for:",
+                    placeholder="e.g. climate change"
+                ),
+                gr.update(visible=True)
+            )
 
-    def predict_sentiment_wrapper(self, selected_choice: str, user_input_text: str, search_type: str) -> tuple[
-        str, str]:
-        # Call the controller's method to handle the logic
-        # Now passing the search_type parameter (will be used only when Keyword is selected)
-        main_result, stats_result = self.controller.process_analysis_request(selected_choice, user_input_text,
-                                                                             search_type)
+    def predict_sentiment_wrapper(self, selected_choice: str, user_input_text: str, search_type: str) -> tuple[str, str]:
+        main_result, stats_result = self.controller.process_analysis_request(
+            selected_choice, user_input_text, search_type
+        )
         return main_result, stats_result
 
     def launch(self):

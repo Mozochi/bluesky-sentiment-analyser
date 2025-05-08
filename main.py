@@ -3,14 +3,15 @@ from controller import Controller
 from analyse import SentimentAnalyser
 from BSkyAPI import *
 
+
+class SimpleBSkyAPIClient:
+    def __init__(self, search_func, handle_func, validate_handle_func):
+        self.get_posts_from_search = search_func
+        self.get_posts_from_handle = handle_func
+        self.handle_validation = validate_handle_func  
+
+
 if __name__ == '__main__':
-
-    class SimpleBSkyAPIClient:
-        def __init__(self, search_func, handle_func, validate_handle_func):
-            self.get_posts_from_search = search_func
-            self.get_posts_from_handle = handle_func
-            self.handle_validation = validate_handle_func  
-
     PATH_TO_MODEL_FILE = "sentiment_analyser_model.json"
 
     ### Instantiate Components
