@@ -11,7 +11,7 @@ Python 3.9+
   
 ### **2. Clone the Repo**  
  ```bash  
- git clone https://github.com/Mozochi/sentiment-analysis-TSE-Project.git  
+ git clone https://github.com/Mozochi/bluesky-sentiment-analyser.git
 ```  
   
 ### **3. Create Virtual Environment (Recommended):**  
