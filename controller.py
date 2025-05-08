@@ -6,7 +6,7 @@ class Controller:
         self.model_path = model_path
 
 
-    def process_analysis_request(self, selected_choice: str, user_input_text: str) -> tuple[str, str]:
+    def process_analysis_request(self, selected_choice: str, user_input_text: str, search_type: str) -> tuple[str, str, str]:
         empty_stats_string = "Positive: 0\nNeutral: 0\nNegative:0"
         if not user_input_text:
             return "Error: Please enter some text", empty_stats_string
@@ -22,7 +22,7 @@ class Controller:
 
             
         elif selected_choice == "Keyword":
-            api_data = self.api_client.get_posts_from_search(user_input_text, "latest", "en")
+            api_data = self.api_client.get_posts_from_search(user_input_text, search_type, "en")
 
             if api_data.empty or api_data is None:
                 return "No posted found for the keyword, or an API error as occurred.", empty_stats_string
